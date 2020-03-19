@@ -25,23 +25,14 @@
           <div class="column product__detail">
             <h1 class="title">{{ product.title }}</h1>
             <div v-html="product.descriptionHtml" class="product__description"></div>
-            <div class="product-qty">
-              <input
-                type="number"
-                min="1"
-                class="product-qty__input"
-                name="quantity"
-                v-model="productQty"
-              />
-              <div class="product-qty__adjust">
-                <div class="product-qty__adjust-btn"></div>
-                <div class="product-qty__adjust-btn"></div>
-              </div>
+            <div class="product__add-to-cart-container">
+              <product-qty-input v-on:qtyChange="updateQty"></product-qty-input>
+              <b-button class="product__add-to-cart" type="is-dark">
+                <span v-if="product">{{ price | currency }} |</span>
+                <strong>Add to Cart</strong>
+              </b-button>
             </div>
-            <b-button class="product__add-to-cart" type="is-dark">
-              {{ product.variants[0].price | currency }} |
-              <strong>Add to Cart</strong>
-            </b-button>
+
             <div
               class="product__reassurance"
             >Skip or cancel anytime. Money-Back Guarantee. Free Shipping.</div>
@@ -53,10 +44,20 @@
 </template>
 
 <script>
+import ProductQtyInput from '~/components/ProductQtyInput'
+
 export default {
+  components: {
+    ProductQtyInput
+  },
   data: function() {
     return {
       productQty: 1
+    }
+  },
+  methods: {
+    updateQty(value) {
+      this.productQty = value
     }
   },
   async asyncData({ $shopify, error, params }) {
@@ -71,6 +72,9 @@ export default {
     }
   },
   computed: {
+    price() {
+      return this.product.variants[0].price * this.productQty
+    },
     carousels() {
       return this.product.images.map(a => a.src)
 
@@ -101,8 +105,14 @@ export default {
       padding: 0 8rem;
     }
 
-    &__add-to-cart {
+    &__add-to-cart-container {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
       margin-top: 1.5rem;
+    }
+
+    &__add-to-cart {
       padding-left: 2rem;
       padding-right: 2rem;
       padding-top: calc(1em - 1px);
@@ -110,41 +120,6 @@ export default {
       font-size: 1rem;
       height: auto;
     }
-  }
-}
-
-.product-qty {
-  display: flex;
-  width: 72px;
-  max-width: 72px;
-  flex-basis: 72px;
-  border-radius: 6px;
-  border: 1px solid #d2d4d6;
-  box-shadow: inset 0 3px 0 0 rgba(0, 0, 0, 0.04), 0 2px 0 0 rgba(0, 0, 0, 0.02);
-
-  &__input {
-    dflex: 1;
-    font-size: 24px;
-    text-align: center;
-    min-width: 1px;
-    padding: 10px 0 10px 12px;
-    border: 0;
-    box-shadow: none;
-    background-color: transparent;
-  }
-
-  &__adjust {
-    display: flex;
-    flex-flow: column nowrap;
-    padding: 3px 0;
-  }
-
-  &__adjust-btn {
-    flex: 1;
-    width: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 }
 
