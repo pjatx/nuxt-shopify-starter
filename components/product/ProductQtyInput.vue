@@ -56,7 +56,9 @@ export default {
   border: 1px solid #d2d4d6;
   box-shadow: inset 0 3px 0 0 rgba(0, 0, 0, 0.04), 0 2px 0 0 rgba(0, 0, 0, 0.02);
   height: 100%;
+  min-height: 56px;
   margin-right: 0.5rem;
+
   &__input {
     flex: 1;
     font-size: 24px;

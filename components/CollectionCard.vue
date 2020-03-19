@@ -1,19 +1,15 @@
 <template>
-  <nuxt-link :to="'/product/' + product.id">
+  <nuxt-link :to="'/collection/' + collection.id">
     <div class="product-card">
-      <picture v-lazy-container="{ selector: 'img' }">
-        <source :srcset="product.images[0].src +'?webp'" type="image/webp" />
-        <source :srcset="product.images[0].src" type="image/jpeg" />
-        <img :data-src="product.images[0].src" data-loading="~/assets/images/placeholder.gif" />
+      <picture v-if="collection.image" v-lazy-container="{ selector: 'img' }">
+        <source :srcset="collection.image.src +'?webp'" type="image/webp" />
+        <source :srcset="collection.image.src" type="image/jpeg" />
+        <img :data-src="collection.image.src" data-loading="~/assets/images/placeholder.gif" />
       </picture>
       <div class="product-card__footer">
-        <h3 class="title is-5">{{ product.title }}</h3>
+        <h3 class="title is-5">{{ collection.title }}</h3>
         <div class="product-card__footer--bottom">
-          <span class="product-card__price">{{ product.variants[0].price | currency }}</span>
-          <button
-            class="button add-to-cart is-primary"
-            @click="addProductToCart(product)"
-          >Add to Cart</button>
+          <button class="button add-to-cart is-primary">View Collection</button>
         </div>
       </div>
     </div>
@@ -24,11 +20,10 @@
 import { mapState, mapActions } from 'vuex'
 
 export default {
-  name: 'ProductCard',
+  name: 'CollectionCard',
   props: {
-    product: Object
-  },
-  methods: mapActions('cart', ['addProductToCart'])
+    collection: Object
+  }
 }
 </script>
 
@@ -47,7 +42,7 @@ export default {
   padding: 30px 15px 25px;
   background: white;
   transition: all 0.3s ease 0s;
-  height: 100%;
+  flex: 1 0 auto;
 
   .title {
     text-transform: capitalize;

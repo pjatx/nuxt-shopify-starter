@@ -26,17 +26,15 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   methods: {
     toggleDrawer() {
       this.$store.dispatch('cart/toggleCartDrawer')
     }
   },
-  computed: {
-    cartCount() {
-      return this.$store.state.cart.items.length
-    }
-  }
+  computed: mapGetters('cart', ['cartCount'])
 }
 </script>
 

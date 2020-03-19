@@ -14,6 +14,7 @@
                 </li>
               </ul>
             </nav>
+
             <b-carousel :autoplay="false">
               <b-carousel-item v-for="(carousel, i) in carousels" :key="i">
                 <div class="carousel__container">
@@ -22,12 +23,24 @@
               </b-carousel-item>
             </b-carousel>
           </div>
+
           <div class="column product__detail">
-            <h1 class="title">{{ product.title }}</h1>
+            <h1 class="title is-2">{{ product.title }}</h1>
             <div v-html="product.descriptionHtml" class="product__description"></div>
+
+            <product-variant-selector
+              v-on:variantChange="updateVariant"
+              :variants="product.variants"
+            />
+
             <div class="product__add-to-cart-container">
-              <product-qty-input v-on:qtyChange="updateQty"></product-qty-input>
-              <b-button class="product__add-to-cart" type="is-dark">
+              <product-qty-input v-on:qtyChange="updateQty" />
+              <b-button
+                class="product__add-to-cart"
+                type="is-dark"
+                @click="addProductToCart(product)"
+                expanded
+              >
                 <span v-if="product">{{ price | currency }} |</span>
                 <strong>Add to Cart</strong>
               </b-button>
@@ -44,20 +57,35 @@
 </template>
 
 <script>
-import ProductQtyInput from '~/components/ProductQtyInput'
+import ProductQtyInput from '~/components/product/ProductQtyInput'
+import ProductVariantSelector from '~/components/product/ProductVariantSelector'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   components: {
+    ProductVariantSelector,
     ProductQtyInput
   },
   data: function() {
     return {
-      productQty: 1
+      productQty: 1,
+      variant: '',
+      variantPrice: ''
     }
   },
   methods: {
+    ...mapActions('cart', ['addProductToCart']),
+
     updateQty(value) {
       this.productQty = value
+    },
+    updateVariant(value) {
+      this.variant = value
+      let variantPrice = this.product.variants.find(
+        variant => variant.id === this.variant
+      ).price
+
+      this.variantPrice = variantPrice
     }
   },
   async asyncData({ $shopify, error, params }) {
@@ -73,12 +101,10 @@ export default {
   },
   computed: {
     price() {
-      return this.product.variants[0].price * this.productQty
+      return this.variantPrice * this.productQty
     },
     carousels() {
       return this.product.images.map(a => a.src)
-
-      // objArray.map(a => a.foo);
     }
   }
 }
@@ -105,11 +131,14 @@ export default {
       padding: 0 8rem;
     }
 
+    &__variants {
+      margin: 2rem 0;
+    }
+
     &__add-to-cart-container {
       display: flex;
       justify-content: flex-start;
       align-items: flex-start;
-      margin-top: 1.5rem;
     }
 
     &__add-to-cart {
@@ -119,6 +148,11 @@ export default {
       padding-bottom: calc(1em - 1px);
       font-size: 1rem;
       height: auto;
+    }
+
+    &__reassurance {
+      margin: 1rem 0;
+      font-size: 0.75rem;
     }
   }
 }

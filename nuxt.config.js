@@ -36,7 +36,6 @@ export default {
   plugins: [
     '~/plugins/vue-lazyload',
     '~/plugins/currency',
-    // '~/plugins/vue-click-outside.js',
     { src: '~/plugins/vuex-persist.js', ssr: false }
   ],
   /*
@@ -60,7 +59,9 @@ export default {
   styleResources: {
     scss: [
       'node_modules/bulma-scss/utilities/_all.scss',
-      '~/assets/styles/utilities/_all.scss'
+      '~/assets/styles/utilities/_all.scss',
+      '~/assets/styles/utilities/_all.scss',
+      '~/assets/styles/_all.scss'
     ]
   },
 

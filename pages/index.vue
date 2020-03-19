@@ -1,14 +1,21 @@
 <template>
-  <div class="container">
-    <div>
-      <h1 class="title">tester</h1>
-      <h2 class="subtitle">My amazing Nuxt.js project</h2>
-      <div class="products">
+  <div>
+    <section class="hero is-medium">
+      <div class="hero-body">
+        <div class="container is-centered">
+          <h1 class="title">Hero title</h1>
+          <h2 class="subtitle">Hero subtitle</h2>
+        </div>
+      </div>
+    </section>
+    <div class="container">
+      <div class="columns is-multiline">
         <ProductCard
           v-for="(product, index) in products"
           :key="index"
           :product="product"
           :data-index="index"
+          class="column"
         />
       </div>
     </div>
@@ -43,22 +50,5 @@ export default {
 <style lang="scss" scoped>
 body {
   background-color: #fff;
-}
-
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.products {
-  display: flex;
-  flex-wrap: wrap;
-  margin: auto;
-  text-align: center;
-  justify-content: center;
 }
 </style>

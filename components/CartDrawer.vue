@@ -28,7 +28,7 @@
                     <b-numberinput
                       controls-rounded
                       :data-item-id="item.id"
-                      editable="false"
+                      :editable="false"
                       v-model="item.quantity"
                       type="is-light"
                       size="is-small"

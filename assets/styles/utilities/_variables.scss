@@ -1,13 +1,5 @@
 $white: #fff;
-
-.is-primary {
-  background-color: #00d1b2;
-
-  &.is-light {
-    background-color: #ebfffc;
-    color: #00947e;
-  }
-}
+$primary: #7957d5;
 
 body {
   font-family: 'Avenir Next';
