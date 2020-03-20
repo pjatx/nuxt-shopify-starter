@@ -41,7 +41,7 @@
                 @click="addProductToCart(product)"
                 expanded
               >
-                <span v-if="product">{{ price | currency }} |</span>
+                <span v-if="product">{{ total | currency }} |</span>
                 <strong>Add to Cart</strong>
               </b-button>
             </div>
@@ -69,8 +69,7 @@ export default {
   data: function() {
     return {
       productQty: 1,
-      variant: '',
-      variantPrice: ''
+      selectedVariant: ''
     }
   },
   methods: {
@@ -81,11 +80,9 @@ export default {
     },
     updateVariant(value) {
       this.variant = value
-      let variantPrice = this.product.variants.find(
+      this.selectedVariant = this.product.variants.find(
         variant => variant.id === this.variant
-      ).price
-
-      this.variantPrice = variantPrice
+      )
     }
   },
   async asyncData({ $shopify, error, params }) {
@@ -100,8 +97,8 @@ export default {
     }
   },
   computed: {
-    price() {
-      return this.variantPrice * this.productQty
+    total() {
+      return this.selectedVariant.price * this.productQty
     },
     carousels() {
       return this.product.images.map(a => a.src)

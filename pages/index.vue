@@ -8,14 +8,14 @@
         </div>
       </div>
     </section>
-    <div class="container">
-      <div class="columns is-multiline">
+    <div class="container products__grid">
+      <div class="columns is-3 is-multiline">
         <ProductCard
           v-for="(product, index) in products"
           :key="index"
           :product="product"
           :data-index="index"
-          class="column"
+          class="column is-3"
         />
       </div>
     </div>
@@ -50,5 +50,10 @@ export default {
 <style lang="scss" scoped>
 body {
   background-color: #fff;
+}
+
+.products {
+  &__grid {
+  }
 }
 </style>

@@ -1,5 +1,5 @@
-<template>
-  <div>
+<template >
+  <div :class="{ isNoScroll: cartDrawerActive }">
     <nav-bar />
     <nuxt />
     <cart-drawer />
@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import NavBar from '~/components/NavBar.vue'
 import CartDrawer from '~/components/CartDrawer.vue'
 
@@ -14,7 +15,8 @@ export default {
   components: {
     NavBar,
     CartDrawer
-  }
+  },
+  computed: mapState({ cartDrawerActive: state => state.cart.cartDrawerActive })
 }
 </script>
 

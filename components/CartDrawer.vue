@@ -35,13 +35,10 @@
                       @input="changeQuantity(item, $event)"
                     ></b-numberinput>
                   </b-field>
-
-                  <!-- <div class="item__remove" @click="removeCartItem(item)">X</div> -->
                 </div>
               </div>
             </div>
           </div>
-          <!-- <p>Total: {{ cartTotal | currency }}</p> -->
         </div>
       </div>
       <div class="cart-drawer__footer">
@@ -138,7 +135,7 @@ export default {
     z-index: 0;
     transition: transform 0.8s cubic-bezier(0.32, 0.24, 0.15, 1);
     transform: translateX(100%);
-    overflow: hidden;
+
     text-align: left;
     padding: 1.5rem 1.5rem 1rem;
     display: flex;
@@ -169,7 +166,6 @@ export default {
       z-index: 900;
       transition: transform 0.8s cubic-bezier(0.32, 0.24, 0.15, 1);
       transform: translateX(0);
-      overflow: scroll;
       right: 1.5rem;
     }
   }
@@ -184,10 +180,21 @@ export default {
     align-items: center;
   }
 
+  &__body {
+    margin-top: 4rem;
+    max-height: calc(100vh - 24rem);
+    overflow: scroll;
+    display: block;
+  }
+
   &__footer {
     padding: 1rem;
     justify-content: center;
     align-items: center;
+    position: fixed;
+    bottom: 0;
+    width: calc(100% - 3rem);
+    background: $white;
   }
 
   &__subtotal {
@@ -224,6 +231,7 @@ export default {
 
   &__body {
     display: flex;
+    position: relative;
     flex-direction: column;
     justify-content: center;
     padding: 0 1rem;

@@ -1,23 +1,28 @@
 <template>
-  <nuxt-link :to="'/product/' + product.id">
-    <div class="product-card">
-      <picture v-lazy-container="{ selector: 'img' }">
-        <source :srcset="product.images[0].src +'?webp'" type="image/webp" />
-        <source :srcset="product.images[0].src" type="image/jpeg" />
-        <img :data-src="product.images[0].src" data-loading="~/assets/images/placeholder.gif" />
-      </picture>
-      <div class="product-card__footer">
-        <h3 class="title is-5">{{ product.title }}</h3>
-        <div class="product-card__footer--bottom">
+  <div>
+    <nuxt-link class="product-card__link" :to="'/product/' + product.id">
+      <div class="product-card">
+        <picture v-lazy-container="{ selector: 'img' }">
+          <source :srcset="product.images[0].src +'?webp'" type="image/webp" />
+          <source :srcset="product.images[0].src" type="image/jpeg" />
+          <img :data-src="product.images[0].src" data-loading="~/assets/images/placeholder.gif" />
+        </picture>
+        <div class="product-card__footer">
+          <h3 class="title is-6">{{ product.title }}</h3>
+          <h4 class="subtitle has-text-grey">{{ product.productType }}</h4>
           <span class="product-card__price">{{ product.variants[0].price | currency }}</span>
-          <button
-            class="button add-to-cart is-primary"
-            @click="addProductToCart(product)"
-          >Add to Cart</button>
+          <div class="product-card__footer--bottom">
+            <b-button
+              class="button add-to-cart is-primary"
+              expanded
+              @click.stop="addToCart(product)"
+              v-on:click.prevent
+            >ADD TO CART</b-button>
+          </div>
         </div>
       </div>
-    </div>
-  </nuxt-link>
+    </nuxt-link>
+  </div>
 </template>
 
 <script>
@@ -28,7 +33,14 @@ export default {
   props: {
     product: Object
   },
-  methods: mapActions('cart', ['addProductToCart'])
+  methods: {
+    ...mapActions('cart', ['addProductToCart']),
+    ...mapActions('cart', ['toggleCartDrawer']),
+    addToCart(product) {
+      this.addProductToCart(product)
+      this.toggleCartDrawer()
+    }
+  }
 }
 </script>
 
@@ -38,20 +50,27 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   box-shadow: rgba(213, 213, 213, 0.4) 0px 5px 14px 0px;
-  max-width: 385px;
-  width: 345px;
   position: relative;
   text-align: center;
   border-radius: 6px;
-  margin: 15px;
   padding: 30px 15px 25px;
   background: white;
   transition: all 0.3s ease 0s;
   height: 100%;
+  z-index: 1;
+
+  &__link {
+    z-index: 2;
+  }
 
   .title {
     text-transform: capitalize;
-    font-weight: 300;
+    font-size: 1rem;
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
   }
 
   img {
@@ -62,8 +81,8 @@ export default {
   }
 
   &__price {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 500;
   }
 
   &__footer {
@@ -74,8 +93,12 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 1rem;
+      padding: 1rem 2rem 0;
     }
+  }
+
+  .add-to-cart {
+    z-index: 10;
   }
 }
 </style>

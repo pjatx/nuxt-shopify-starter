@@ -13,7 +13,7 @@
     <template slot="start"></template>
 
     <template slot="end">
-      <b-navbar-item tag="span" class="cart" @click="toggleDrawer()">
+      <b-navbar-item tag="span" class="cart" @click="toggleCartDrawer">
         <div class="badge">
           <b-icon icon="cart-outline"></b-icon>
           <span class="badge__wrapper">
@@ -26,14 +26,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  methods: {
-    toggleDrawer() {
-      this.$store.dispatch('cart/toggleCartDrawer')
-    }
-  },
+  methods: mapActions('cart', ['toggleCartDrawer']),
   computed: mapGetters('cart', ['cartCount'])
 }
 </script>

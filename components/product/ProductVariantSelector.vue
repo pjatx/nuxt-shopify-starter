@@ -13,7 +13,7 @@
         @input="updateVariant"
       >
         <div class="variant__description">
-          <div>{{ variant.title | titlecase }} {{ value }}</div>
+          <div>{{ variant.title | titlecase }}</div>
           <div class="price">{{ variant.price | currency }}</div>
         </div>
       </b-radio>
