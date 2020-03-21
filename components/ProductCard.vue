@@ -3,9 +3,10 @@
     <nuxt-link class="product-card__link" :to="'/product/' + product.id">
       <div class="product-card">
         <picture v-lazy-container="{ selector: 'img' }">
-          <source :srcset="product.images[0].src +'?webp'" type="image/webp" />
-          <source :srcset="product.images[0].src" type="image/jpeg" />
-          <img :data-src="product.images[0].src" data-loading="~/assets/images/placeholder.gif" />
+          <img
+            :data-src="product.images[0].src + '?resize&size=175'"
+            :data-loading="product.images[0].src + '?lqip'"
+          />
         </picture>
         <div class="product-card__footer">
           <h3 class="title is-6">{{ product.title }}</h3>
