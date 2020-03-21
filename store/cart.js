@@ -1,6 +1,6 @@
 export const state = () => ({
   items: [],
-  checkoutStatus: null,
+
   cartDrawerActive: false
 })
 export const getters = {
@@ -17,12 +17,15 @@ export const getters = {
   cartCount: (state, getters, rootState) => {
     let total = state.items.reduce((acc, item) => acc + item.quantity, 0)
     return total
+  },
+  checkoutId: (state, getters, rootState) => {
+    return state.checkoutId
   }
 }
 export const mutations = {
-  pushProductToCart(state, product) {
+  pushProductToCart(state, variant) {
     state.items.push({
-      ...product,
+      ...variant,
       quantity: 1
     })
   },
@@ -51,8 +54,8 @@ export const mutations = {
     state.items = items
   },
 
-  setCheckoutStatus(state, status) {
-    state.checkoutStatus = status
+  setCheckoutId(state, checkoutId) {
+    state.checkoutId = checkoutId
   },
 
   closeCartDrawer(state) {
@@ -64,30 +67,17 @@ export const mutations = {
   }
 }
 export const actions = {
-  checkout({ commit, state }, products) {
-    const savedCartItems = [...state.items]
-    commit('setCheckoutStatus', null)
-    // empty cart
-    commit('setCartItems', { items: [] })
-    shop.buyProducts(
-      products,
-      () => commit('setCheckoutStatus', 'successful'),
-      () => {
-        commit('setCheckoutStatus', 'failed')
-        // rollback to the cart saved before sending the request
-        commit('setCartItems', { items: savedCartItems })
-      }
-    )
+  setCheckoutId({ commit, state }, checkoutId) {
+    commit('setCheckoutId', checkoutId)
   },
 
-  addProductToCart({ state, commit }, product) {
-    commit('setCheckoutStatus', null)
-    if (product.variants[0].available) {
-      const cartItem = state.items.find(item => item.id === product.id)
+  addProductToCart({ state, commit }, variant) {
+    if (variant.available) {
+      const cartItem = state.items.find(item => item.id === variant.id)
       if (!cartItem) {
-        commit('pushProductToCart', product)
+        commit('pushProductToCart', variant)
       } else {
-        commit('incrementItemQuantity', cartItem)
+        commit('incrementItemQuantity', variant)
       }
     }
   },
@@ -101,13 +91,20 @@ export const actions = {
   },
 
   removeProductFromCart({ state, commit }, product) {
-    console.log(product)
     const cartItem = state.items.find(item => item.id === product.id)
     commit('removeProductFromCart', cartItem)
   },
 
   updateCartQty({ state, commit }, data) {
     const cartItem = state.items.find(item => item.id === data.item.id)
+    // To Do: Create line items state and keep in sync with shopify
+
+    // const lineItem = {}
+    // const lineItems = []
+    // lineItem.variantId = cartItem.id
+    // lineItem.quantity = cartItem.quantity
+    // lineItems.push(lineItems)
+    // this.$shopify.checkout.updateLineItems(checkoutId, lineItemsToUpdate)
 
     const payload = {
       cartItem: cartItem,

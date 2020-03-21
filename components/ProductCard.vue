@@ -15,7 +15,7 @@
             <b-button
               class="button add-to-cart is-primary"
               expanded
-              @click.stop="addToCart(product)"
+              @click.stop="addToCart(primaryVariant)"
               v-on:click.prevent
             >ADD TO CART</b-button>
           </div>
@@ -33,11 +33,18 @@ export default {
   props: {
     product: Object
   },
+  computed: {
+    primaryVariant() {
+      const variant = this.product.variants[0]
+      variant.productName = this.product.title
+      return variant
+    }
+  },
   methods: {
     ...mapActions('cart', ['addProductToCart']),
     ...mapActions('cart', ['toggleCartDrawer']),
-    addToCart(product) {
-      this.addProductToCart(product)
+    async addToCart(variant) {
+      const cart = await this.addProductToCart(variant)
       this.toggleCartDrawer()
     }
   }

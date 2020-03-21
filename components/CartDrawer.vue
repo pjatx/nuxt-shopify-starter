@@ -16,12 +16,15 @@
           <div v-for="item in cart" :key="item.id" class="item" v-if="item.quantity>0">
             <div class="item__wrapper">
               <picture class="item__image">
-                <img :src="item.images[0].src" />
+                <img :src="item.image.src" />
               </picture>
               <div class="item__body">
                 <div class="item__body--top">
-                  <div class="item__title">{{ item.title }}</div>
-                  <div class="item__price">{{ item.variants[0].price }}</div>
+                  <div class="item__heading">
+                    <div class="item__title">{{ item.productName }}</div>
+                    <div class="item__subtitle">{{ item.title }}</div>
+                  </div>
+                  <div class="item__price">{{ item.price | currency }}</div>
                 </div>
                 <div class="item__body--bottom">
                   <b-field class="item__quantity">
@@ -49,8 +52,9 @@
         <b-button
           type="is-primary"
           size="is-large"
-          @click="checkout(cart)"
+          @click="checkout(lineItems)"
           :disabled="!cart.length"
+          :loading="checkoutLoading"
           expanded
         >Checkout</b-button>
       </div>
@@ -59,12 +63,17 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapActions } from 'vuex'
 
 export default {
+  data: function() {
+    return {
+      checkoutLoading: false
+    }
+  },
   computed: {
     ...mapState({
-      checkoutStatus: state => state.cart.checkoutStatus
+      checkoutId: state => state.cart.checkoutId
     }),
     ...mapGetters('cart', {
       cart: 'cartProducts'
@@ -74,15 +83,46 @@ export default {
     }),
     cartTotal() {
       let total = this.cart.reduce(
-        (acc, item) => acc + parseFloat(item.variants[0].price * item.quantity),
+        (acc, item) => acc + parseFloat(item.price * item.quantity),
         0
       )
       return total
+    },
+    lineItems() {
+      let lineItems = this.cart.map(function(item) {
+        return {
+          variantId: item.id,
+          quantity: item.quantity
+        }
+      })
+
+      return lineItems
     }
   },
   methods: {
-    checkout(products) {
-      this.$store.dispatch('cart/checkout', cart)
+    ...mapActions('cart', ['setCheckoutId']),
+
+    async checkout(lineItems) {
+      this.checkoutLoading = true
+
+      // To Do: COnditionally create a new checkout if user doesn't have an existing one
+      // var checkout
+      // if (!this.checkoutId) {
+      //   checkout = await this.$shopify.checkout.create()
+      // } else {
+      //   checkout = await this.$shopify.checkout.fetch(this.checkoutId)
+      // }
+      const checkout = await this.$shopify.checkout.create()
+      const checkoutId = checkout.id
+
+      const checkoutItems = await this.$shopify.checkout.addLineItems(
+        checkoutId,
+        lineItems
+      )
+
+      const storeCheckout = this.setCheckoutId(checkoutId)
+
+      window.location = checkout.webUrl
     },
     toggleDrawer() {
       this.$store.dispatch('cart/toggleCartDrawer')
@@ -198,10 +238,15 @@ export default {
   }
 
   &__subtotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin: 2rem 0;
+
     h3 {
       font-size: 1.25rem;
       font-weight: 500;
+      margin-right: 0.5rem;
     }
 
     &--amount {
@@ -229,6 +274,11 @@ export default {
     padding: 0 1rem;
   }
 
+  &__price {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
   &__body {
     display: flex;
     position: relative;
@@ -253,13 +303,20 @@ export default {
     font-weight: bold;
   }
 
+  &__subtitle {
+    font-size: 0.75rem;
+  }
+
   &__image {
     display: flex;
     border-radius: 6px;
     overflow: hidden;
+    width: 5rem;
+    height: 5rem;
 
     img {
-      width: 4rem;
+      object-fit: cover;
+      object-position: center;
     }
   }
 
@@ -270,6 +327,10 @@ export default {
 
   .b-numberinput {
     width: 125px;
+
+    button {
+      background-color: transparent;
+    }
   }
 }
 </style>

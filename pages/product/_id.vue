@@ -38,7 +38,7 @@
               <b-button
                 class="product__add-to-cart"
                 type="is-dark"
-                @click="addProductToCart(product)"
+                @click="addToCart(selectedVariant)"
                 expanded
               >
                 <span v-if="product">{{ total | currency }} |</span>
@@ -74,6 +74,12 @@ export default {
   },
   methods: {
     ...mapActions('cart', ['addProductToCart']),
+    ...mapActions('cart', ['toggleCartDrawer']),
+
+    addToCart(product) {
+      this.addProductToCart(product)
+      this.toggleCartDrawer()
+    },
 
     updateQty(value) {
       this.productQty = value
@@ -83,6 +89,7 @@ export default {
       this.selectedVariant = this.product.variants.find(
         variant => variant.id === this.variant
       )
+      this.selectedVariant.productName = this.product.title
     }
   },
   async asyncData({ $shopify, error, params }) {
