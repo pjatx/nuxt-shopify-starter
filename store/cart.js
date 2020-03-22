@@ -1,6 +1,5 @@
 export const state = () => ({
   items: [],
-
   cartDrawerActive: false
 })
 export const getters = {

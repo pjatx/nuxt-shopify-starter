@@ -13,7 +13,17 @@
     <template slot="start"></template>
 
     <template slot="end">
+      <b-navbar-dropdown label="Collections">
+        <b-navbar-item
+          v-for="(collection, index) in collections"
+          :key="index"
+          :collection="collection"
+          :data-index="index"
+          :href="'/colleciont/' + collection.id "
+        >{{ collection.title }}</b-navbar-item>
+      </b-navbar-dropdown>
       <b-navbar-item tag="span" class="cart" @click="toggleCartDrawer">
+        <span>Cart</span>
         <div class="badge">
           <b-icon icon="cart-outline"></b-icon>
           <span class="badge__wrapper">
@@ -26,11 +36,32 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapState } from 'vuex'
 
 export default {
-  methods: mapActions('cart', ['toggleCartDrawer']),
-  computed: mapGetters('cart', ['cartCount'])
+  methods: {
+    ...mapActions('cart', ['toggleCartDrawer'])
+  },
+  computed: {
+    ...mapGetters('cart', ['cartCount']),
+    ...mapState({
+      collections: state => state.products.collections
+    }),
+    alphabeticalCollections() {
+      return this.collections.sort((a, b) => (a.title > b.title ? 1 : -1))
+    }
+  },
+  async fetch({ store, error }) {
+    try {
+      await store.dispatch('products/fetchAllCollections')
+    } catch (e) {
+      error({
+        statusCode: 503,
+        message:
+          'Unable to fetch collections at this time. Please try again later.'
+      })
+    }
+  }
 }
 </script>
 

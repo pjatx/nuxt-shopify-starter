@@ -15,11 +15,9 @@ export const actions = {
     const products = await this.$shopify.product.fetchAll()
     commit('SET_PRODUCTS', products)
   },
+
   async fetchAllCollections({ commit }) {
-    const collections = await this.$shopify.collection
-      .fetchAllWithProducts()
-      .then(collections => {
-        commit('SET_COLLECTIONS', collections)
-      })
+    const collections = await this.$shopify.collection.fetchAll()
+    commit('SET_COLLECTIONS', collections)
   }
 }
