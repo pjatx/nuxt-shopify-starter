@@ -10,9 +10,9 @@
           <h2 class="title">Your Bag</h2>
         </div>
         <div class="cart-drawer__body">
-          <p v-show="!cart.length">
+          <!-- <p v-show="!cart.length">
             <i>Please add some products to cart.</i>
-          </p>
+          </p>-->
           <div v-for="item in cart" :key="item.id" class="item" v-if="item.quantity>0">
             <div class="item__wrapper">
               <picture class="item__image">
@@ -52,8 +52,8 @@
         <b-button
           type="is-primary"
           size="is-large"
-          @click="checkout(lineItems)"
-          :disabled="!cart.length"
+          @click="doCheckout(lineItems)"
+          :disabled="!cart"
           :loading="checkoutLoading"
           expanded
         >Checkout</b-button>
@@ -72,20 +72,30 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      checkoutId: state => state.cart.checkoutId
-    }),
     ...mapGetters('cart', {
       cart: 'cartProducts'
+    }),
+    ...mapGetters('cart', {
+      checkout: 'checkout'
     }),
     ...mapState({
       cartDrawerActive: state => state.cart.cartDrawerActive
     }),
+    ...mapState({
+      checkout: state => state.cart.checkout
+    }),
     cartTotal() {
-      let total = this.cart.reduce(
-        (acc, item) => acc + parseFloat(item.price * item.quantity),
-        0
-      )
+      var total
+
+      if (this.cart) {
+        var total = this.cart.reduce(
+          (acc, item) => acc + parseFloat(item.price * item.quantity),
+          0
+        )
+      } else {
+        var total = 0
+      }
+
       return total
     },
     lineItems() {
@@ -100,44 +110,33 @@ export default {
     }
   },
   methods: {
-    ...mapActions('cart', ['setCheckoutId']),
-
-    async checkout(lineItems) {
+    async doCheckout(lineItems) {
       this.checkoutLoading = true
 
       // To Do: COnditionally create a new checkout if user doesn't have an existing one
-      // var checkout
-      // if (!this.checkoutId) {
-      //   checkout = await this.$shopify.checkout.create()
-      // } else {
-      //   checkout = await this.$shopify.checkout.fetch(this.checkoutId)
-      // }
-      const checkout = await this.$shopify.checkout.create()
-      const checkoutId = checkout.id
+      var checkoutObj
+      if (!this.checkout) {
+        checkoutObj = await this.$shopify.checkout.create()
+      } else {
+        checkoutObj = await this.$shopify.checkout.fetch(this.checkout.id)
+      }
 
+      const checkoutId = checkoutObj.id
       const checkoutItems = await this.$shopify.checkout.addLineItems(
         checkoutId,
         lineItems
       )
 
-      const storeCheckout = this.setCheckoutId(checkoutId)
+      this.setCheckout(checkoutObj)
 
-      window.location = checkout.webUrl
+      // window.location = checkoutObj.webUrl
     },
+    ...mapActions('cart', ['setCheckout']),
     toggleDrawer() {
       this.$store.dispatch('cart/toggleCartDrawer')
     },
     closeCartDrawer() {
       this.$store.dispatch('cart/closeCartDrawer')
-    },
-    decrementCartItem() {
-      this.$store.dispatch('cart/decrementProductFromCart')
-    },
-    incrementCartItem() {
-      this.$store.dispatch('cart/addProductToCart')
-    },
-    removeCartItem(item) {
-      this.$store.dispatch('cart/removeProductFromCart', item)
     },
     changeQuantity(item, qty) {
       this.$store.dispatch('cart/updateCartQty', { item, qty })

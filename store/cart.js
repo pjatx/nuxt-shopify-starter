@@ -1,5 +1,6 @@
 export const state = () => ({
   items: [],
+  checkout: null,
   cartDrawerActive: false
 })
 export const getters = {
@@ -17,8 +18,8 @@ export const getters = {
     let total = state.items.reduce((acc, item) => acc + item.quantity, 0)
     return total
   },
-  checkoutId: (state, getters, rootState) => {
-    return state.checkoutId
+  checkout: (state, getters, rootState) => {
+    return state.checkout
   }
 }
 export const mutations = {
@@ -27,16 +28,6 @@ export const mutations = {
       ...variant,
       quantity: 1
     })
-  },
-
-  incrementItemQuantity(state, { id }) {
-    const cartItem = state.items.find(item => item.id === id)
-    cartItem.quantity++
-  },
-
-  decrementItemQuantity(state, { id }) {
-    const cartItem = state.items.find(item => item.id === id)
-    cartItem.quantity--
   },
 
   removeProductFromCart(state, { id }) {
@@ -53,8 +44,8 @@ export const mutations = {
     state.items = items
   },
 
-  setCheckoutId(state, checkoutId) {
-    state.checkoutId = checkoutId
+  setCheckout(state, checkout) {
+    state.checkout = checkout
   },
 
   closeCartDrawer(state) {
@@ -66,8 +57,8 @@ export const mutations = {
   }
 }
 export const actions = {
-  setCheckoutId({ commit, state }, checkoutId) {
-    commit('setCheckoutId', checkoutId)
+  setCheckout({ commit, state }, checkout) {
+    commit('setCheckout', checkout)
   },
 
   addProductToCart({ state, commit }, variant) {
@@ -96,14 +87,6 @@ export const actions = {
 
   updateCartQty({ state, commit }, data) {
     const cartItem = state.items.find(item => item.id === data.item.id)
-    // To Do: Create line items state and keep in sync with shopify
-
-    // const lineItem = {}
-    // const lineItems = []
-    // lineItem.variantId = cartItem.id
-    // lineItem.quantity = cartItem.quantity
-    // lineItems.push(lineItems)
-    // this.$shopify.checkout.updateLineItems(checkoutId, lineItemsToUpdate)
 
     const payload = {
       cartItem: cartItem,
